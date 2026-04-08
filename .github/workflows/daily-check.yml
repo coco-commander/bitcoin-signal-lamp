@@ -1,0 +1,12 @@
+name: Daily Commander Report
+on:
+  schedule:
+    - cron: '0 0 * * *' # 매일 한국 시간 오전 9시에 작동!
+  workflow_dispatch: # 사령관님이 원할 때 수동으로도 실행 가능!
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say Hello to Commander
+        run: echo "사령관님! 오늘도 시장은 평온합니다! (자동 보고 완료)"
