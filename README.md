@@ -13,9 +13,9 @@
 - 😨 **Fear & Greed Index:** 대중의 심리적 과열 상태 측정
 - 🍱 **Kimchi Premium:** 국내외 거래소 간 가격 차이 실시간 분석
 - 🚦 **Action Signals:** [초록/노랑/빨강] 신호등을 통한 투자 가이드
-  
+
 ### 📈 추가 기능
-- 🚢 **Golden Chart:** 비트코인과 나스닥 등의 수익률을 비교하는 항공모함 차트 생성 (`golden_chart.py`)
+- 🚢 **Golden Chart:** 비트코인과 알트의 수익률을 비교하는 항공모함 차트 생성 (`golden_chart.py`)
 
 ### 🚀 시작하기 (Quick Start)
 이 프로그램은 파이썬이 설치된 환경에서 실행됩니다.
