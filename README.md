@@ -1,3 +1,8 @@
+![Python](https://img.shields.io/badge/python-3.10+-blue?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Market](https://img.shields.io/badge/Market-Sentinel-orange?logo=bitcoin)
+
 ![황금빛 차트](./golden_chart.png)
 
 # 🦖 비트코인 마켓 센티넬 (Bitcoin Signal Lamp)
