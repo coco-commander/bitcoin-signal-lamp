@@ -24,7 +24,6 @@
    ```bash
    python signal_lamp.py
 
-
 ---
 
 ### 📡 참모 네오의 한마디
