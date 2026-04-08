@@ -11,6 +11,7 @@
 - 😨 **Fear & Greed Index:** 대중의 심리적 과열 상태 측정
 - 🍱 **Kimchi Premium:** 국내외 거래소 간 가격 차이 실시간 분석
 - 🚦 **Action Signals:** [초록/노랑/빨강] 신호등을 통한 투자 가이드
+  
 
 ### 🚀 시작하기 (Quick Start)
 이 프로그램은 파이썬이 설치된 환경에서 실행됩니다.
@@ -22,6 +23,7 @@
 2. **프로그램 실행:**
    ```bash
    python signal_lamp.py
+
 
 ### 📡 참모 네오의 한마디
 
