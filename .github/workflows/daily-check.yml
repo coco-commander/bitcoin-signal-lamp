@@ -8,28 +8,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 이 인장이 핵심입니다!
+      contents: write # 파일 쓰기 권한 허용
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }} # 사령관님의 비밀 인장을 직접 사용!
+        uses: actions/checkout@v4 # 최신 v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5 # 최신 v5
         with:
           python-version: '3.10'
 
+      - name: Install dependencies
+        run: pip install requests
+
       - name: Run price check
-        run: |
-          pip install requests
-          python price_check.py
+        run: python price_check.py
 
       - name: Commit and Push changes
+        # 여기서 로봇이 사령관님의 이름으로 수첩을 업데이트합니다!
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add history.txt
-          git commit -m "Auto-update BTC price: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
-          git push origin main # 목적지를 명확히 지정!
+          git commit -m "Auto-update BTC price: $(date)" || echo "No changes to commit"
+          git push
