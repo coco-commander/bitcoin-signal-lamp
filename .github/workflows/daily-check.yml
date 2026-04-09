@@ -8,19 +8,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # 이 인장이 핵심입니다!
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # 사령관님의 비밀 인장을 직접 사용!
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Run price check with auto-install
-        # 여기서 라이브러리 설치와 실행을 동시에 해서 로봇이 딴소리 못 하게 만듭니다! ㅋㅋㅋ
+      - name: Run price check
         run: |
           pip install requests
           python price_check.py
@@ -30,5 +31,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add history.txt
-          git commit -m "Auto-update BTC price" || echo "No changes to commit"
-          git push
+          git commit -m "Auto-update BTC price: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push origin main # 목적지를 명확히 지정!
