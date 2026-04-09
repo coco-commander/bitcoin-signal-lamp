@@ -10,23 +10,20 @@ jobs:
     permissions:
       contents: write
     
-    env: # 최신 버전 경고를 끄고 강제로 실행하게 만드는 장치입니다!
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-      
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # 최신 v4 버전 사용!
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5 # 최신 v5 버전 사용!
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
-        run: pip install requests
-
-      - name: Run price check
-        run: python price_check.py
+      - name: Run price check with auto-install
+        # 여기서 라이브러리 설치와 실행을 동시에 해서 로봇이 딴소리 못 하게 만듭니다! ㅋㅋㅋ
+        run: |
+          pip install requests
+          python price_check.py
 
       - name: Commit and Push changes
         run: |
