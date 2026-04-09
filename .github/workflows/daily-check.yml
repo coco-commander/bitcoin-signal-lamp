@@ -1,15 +1,18 @@
 name: Daily Bitcoin Monitor
 on:
   schedule:
-    - cron: '0 0 * * *' # 매일 오전 9시
-  workflow_dispatch: # 사령관님 수동 버튼
+    - cron: '0 0 * * *' # 매일 한국 시간 오전 9시 (UTC 00:00)
+  workflow_dispatch: # 사령관님 전용 수동 버튼
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions: # 로봇에게 파일을 새로 쓸 수 있는 권한을 줍니다!
+      contents: write
+      
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,7 +25,7 @@ jobs:
       - name: Run price check
         run: python price_check.py
 
-      - name: Commit and Push changes # 중요! 로봇이 기록한 내용을 다시 기지에 저장함
+      - name: Commit and Push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
