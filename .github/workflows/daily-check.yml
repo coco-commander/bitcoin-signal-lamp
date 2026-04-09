@@ -1,12 +1,31 @@
-name: Daily Commander Report
+name: Daily Bitcoin Monitor
 on:
   schedule:
-    - cron: '0 0 * * *' # 매일 한국 시간 오전 9시에 작동!
-  workflow_dispatch: # 사령관님이 원할 때 수동으로도 실행 가능!
+    - cron: '0 0 * * *' # 매일 오전 9시
+  workflow_dispatch: # 사령관님 수동 버튼
 
 jobs:
-  report:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Say Hello to Commander
-        run: echo "사령관님! 오늘도 시장은 평온합니다! (자동 보고 완료)"
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run price check
+        run: python price_check.py
+
+      - name: Commit and Push changes # 중요! 로봇이 기록한 내용을 다시 기지에 저장함
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add history.txt
+          git commit -m "Auto-update BTC price" || echo "No changes to commit"
+          git push
