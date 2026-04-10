@@ -5,10 +5,17 @@ TELEGRAM_TOKEN = "8293408392:AAEsP67r6Z7xSvkiJQjDmkmz8pCm8LRidGY"
 CHAT_ID = "8651989633"
 
 def get_btc_price():
+    # 바이낸스 공식 주소입니다!
     url = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
     response = requests.get(url)
     data = response.json()
-    return float(data['price'])
+    
+    # [수리 완료!] 데이터 주머니 안에 'price'가 있는지 확실히 확인하고 가져옵니다!
+    if 'price' in data:
+        return float(data['price'])
+    else:
+        # 혹시라도 이름이 다르면 데이터 전체를 출력해서 범인을 찾게 해줍니다!
+        raise Exception(f"데이터 형식이 다릅니다: {data}")
 
 def send_telegram_message(message):
     # 사령관님이 올려주신 그 완벽한 코드입니다! ㅉㅉㅉ!
