@@ -1,7 +1,9 @@
 name: Daily Bitcoin Monitor
 on:
   schedule:
-    - cron: '07 0 * * *'  # 하이패스 9시 7분 출근 지령! ㅋㅋㅋ
+    # 한국 시간 기준: 09:07, 15:07, 21:07에 로봇이 출동합니다!
+    # (UTC 기준: 00:07, 06:07, 12:07)
+    - cron: '07 0,6,12 * * *'  
   workflow_dispatch:
 
 env:
