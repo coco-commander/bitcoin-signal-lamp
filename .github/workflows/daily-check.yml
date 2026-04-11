@@ -1,7 +1,7 @@
 name: Daily Bitcoin Monitor
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '07 0 * * *'
   workflow_dispatch:
 
 # 본부의 입을 아예 봉인하는 특수 환경 설정입니다! ㅋㅋㅋ
