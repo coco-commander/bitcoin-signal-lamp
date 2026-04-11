@@ -1,7 +1,6 @@
 import os  # 금고를 열기 위한 마법의 도구입니다!
 import requests
 
-
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
@@ -23,7 +22,7 @@ try:
     formatted_krw = "{:,.0f}".format(price_krw)
     
     # 보고서 작성 (원화 버전으로 업그레이드!)
-    report_text = f"📢 [비트코인 업비트 승전보]\n사령관님! 현재 BTC 가격은 {formatted_krw}원입니다.\n한국인의 힘! 소고기 가즈아! 🥩🚀"
+    report_text = f"📢 [비트코인 업비트 승전보]\n사령관님! 현재 BTC 가격은 {formatted_krw}원입니다.\n행운이 팡팡 터집니다! 🥩🚀"
     
     # 텔레그램 발송
     send_telegram_message(report_text)
