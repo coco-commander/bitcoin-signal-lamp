@@ -1,22 +1,21 @@
+import os  # 금고를 열기 위한 마법의 도구입니다!
 import requests
 
-# [여기에 사령관님의 정보 입력]
-TELEGRAM_TOKEN = "8293408392:AAEsP67r6Z7xSvkiJQjDmkmz8pCm8LRidGY"
-CHAT_ID = "8651989633"
+# [보안 완료!] 이제 코드를 누가 봐도 사령관님의 정보는 보이지 않습니다.
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 def get_btc_price_upbit():
-    # 업비트 기지는 깃허브 로봇을 환영합니다! ㅋㅋㅋ
     url = "https://api.upbit.com/v1/ticker?markets=KRW-BTC"
     response = requests.get(url)
     data = response.json()
-    # 업비트는 KRW(원화) 기준이므로 달러($) 느낌을 내기 위해 1350으로 나눕니다! ㅋㅋㅋ
-    price_krw = data[0]['trade_price']
-    return price_krw
+    return data[0]['trade_price']
 
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     requests.post(url, json=payload)
+
 
 # --- 실제 실행 구간 ---
 try:
