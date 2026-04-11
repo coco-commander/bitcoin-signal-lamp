@@ -1,36 +1,46 @@
-import os  # 금고를 열기 위한 마법의 도구입니다!
+import os
 import requests
+import json
 
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+HISTORY_FILE = "last_price.txt"  # 가격을 기억할 작은 수첩입니다
 
 def get_btc_price_upbit():
     url = "https://api.upbit.com/v1/ticker?markets=KRW-BTC"
     response = requests.get(url)
-    data = response.json()
-    return data[0]['trade_price']
+    return response.json()[0]['trade_price']
 
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     requests.post(url, json=payload)
 
-
-# --- 실제 실행 구간 ---
-try:
-    price_krw = get_btc_price_upbit()
-    formatted_krw = "{:,.0f}".format(price_krw)
+def run_logic():
+    current_price = get_btc_price_upbit()
+    price_formatted = format(int(current_price), ',')
     
-    # 보고서 작성 (원화 버전으로 업그레이드!)
-    report_text = f"📢 [비트코인 업비트 승전보]\n사령관님! 현재 BTC 가격은 {formatted_krw}원입니다.\n행운이 팡팡 터집니다! 🥩🚀"
+    message = f"📢 [업비트 정기보고]\n현재 비트코인: {price_formatted}원입니다.\n사령관님, 소고기 가즈아! 🥩"
     
-    # 텔레그램 발송
-    send_telegram_message(report_text)
-    
-    # 수첩 기록
-    with open("history.txt", "a") as f:
-        f.write(f"KRW: {formatted_krw}\n")
+    # 1. 이전 가격 불러오기 (수첩 확인)
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r") as f:
+            last_price = float(f.read())
         
-    print("업비트 보고 성공!")
-except Exception as e:
-    print(f"사령관님, 새로운 에러 발생: {e}")
+        # 2. 가격 변동 계산 (변동률 %)
+        change_rate = ((current_price - last_price) / last_price) * 100
+        
+        # 3. 만약 3% 이상 변했다면? (긴급 사이렌!)
+        if abs(change_rate) >= 3:
+            emoji = "🚀 급등!!" if change_rate > 0 else "📉 급락!!"
+            message = f"🚨 [긴급 상황 발생!]\n현재가: {price_formatted}원\n변동률: {change_rate:.2f}% {emoji}\n사령관님, 차트를 확인하십시오! ㅉㅉㅉ!"
+
+    # 4. 새로운 가격을 수첩에 적기
+    with open(HISTORY_FILE, "w") as f:
+        f.write(str(current_price))
+        
+    # 5. 최종 메시지 전송
+    send_telegram_message(message)
+
+if __name__ == "__main__":
+    run_logic()
