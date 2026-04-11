@@ -1,7 +1,7 @@
 import os  # 금고를 열기 위한 마법의 도구입니다!
 import requests
 
-# [보안 완료!] 이제 코드를 누가 봐도 사령관님의 정보는 보이지 않습니다.
+
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
