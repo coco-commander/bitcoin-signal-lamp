@@ -30,7 +30,7 @@ jobs:
           pip install requests
 
       - name: Run price check
-        # [핵심 보안!] 금고에서 보물을 꺼내 로봇에게 전달합니다. ㅉㅉㅉ!
+        # [핵심 보안!] 금고에서 보물을 꺼내 로봇에게 전달합니다.
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -41,8 +41,12 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           
+          # [핵심 수리] 파일이 없어도 에러나지 않게 빈 파일을 먼저 생성합니다! ㅉㅉㅉ!
+          touch history.txt last_price.txt
+          
           date >> history.txt
           git add history.txt last_price.txt
           
+          # 변경사항이 없어도 에러 없이 넘어가도록 설정했습니다.
           git commit -m "Auto-update BTC price: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
           git push origin main
