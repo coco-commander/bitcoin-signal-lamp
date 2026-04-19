@@ -21,7 +21,7 @@ def run_logic():
     price_formatted = format(int(current_price), ',')
     
     message = f"📢 [업비트 정기보고]\n현재 비트코인: {price_formatted}원입니다.\n🧙‍♂️✨🌳 행운이 팡팡! 🔥🍀🚀"
-    
+
     # 1. 이전 가격 불러오기 (수첩 확인)
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
