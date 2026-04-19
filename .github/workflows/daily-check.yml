@@ -49,4 +49,4 @@ jobs:
           
           # 변경사항이 없어도 에러 없이 넘어가도록 설정했습니다.
           git commit -m "Auto-update BTC price: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
-          git push origin main
+          git push origin HEAD
