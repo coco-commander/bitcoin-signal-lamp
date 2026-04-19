@@ -33,7 +33,7 @@ def run_logic():
         # 3. 만약 3% 이상 변했다면? (긴급 사이렌!)
         if abs(change_rate) >= 3:
             emoji = "🚀 급등!!" if change_rate > 0 else "📉 급락!!"
-            message = f"🚨 [긴급 상황 발생!]\n현재가: {price_formatted}원\n변동률: {change_rate:.2f}% {emoji}\n사령관님, 차트를 확인하십시오!"
+            message = f"🚨 사령관님, [긴급 상황 발생!]\n현재가: {price_formatted}원\n변동률: {change_rate:.2f}% {emoji}\n사령관님, 차트를 확인하십시오!"
 
     # 4. 새로운 가격을 수첩에 적기
     with open(HISTORY_FILE, "w") as f:
