@@ -20,7 +20,7 @@ def run_logic():
     current_price = get_btc_price_upbit()
     price_formatted = format(int(current_price), ',')
     
-    message = f"📢 [업비트 정기보고]\n현재 비트코인: {price_formatted}원입니다.\n사령관님, 행운이 팡팡! 🍀🚀"
+    message = f"📢 [업비트 정기보고]\n현재 비트코인: {price_formatted}원입니다.\n최고입니다, 행운이 팡팡! 🔥🍀🚀"
     
     # 1. 이전 가격 불러오기 (수첩 확인)
     if os.path.exists(HISTORY_FILE):
