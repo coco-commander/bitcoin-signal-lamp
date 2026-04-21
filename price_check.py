@@ -8,7 +8,7 @@ CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 # 가격 정보를 가져오는 함수들
 def get_crypto_prices():
     try:
-        # 코인게코 API 하나로 비트와 렌더 가격을 동시에 가져옵니다! ㅉㅉㅉ!
+        # 코인게코 API 하나로 비트와 렌더 가격을 동시에 가져옵니다! 
         url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,render-token&vs_currencies=usd,krw"
         response = requests.get(url)
         data = response.json()
@@ -33,7 +33,7 @@ def run_logic():
     btc_message = (f"📢 [비트코인 실시간 보고]\n"
                    f"🇰🇷 업비트 기준가: {format(int(btc_krw), ',')}원\n"
                    f"🇺🇸 해외 시세: ${format(btc_usd, ',.0f')}\n"
-                   f"🚦 비트 신호등 확인 완료! ㅉㅉㅉ!")
+                   f"🚦 비트 신호등 확인 완료! 짝짝짝!")
 
     # 2. 렌더(RENDER) 데이터 정리
     render_usd = data['render-token']['usd']
