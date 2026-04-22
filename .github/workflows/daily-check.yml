@@ -1,7 +1,7 @@
 name: Daily Bitcoin Monitor
 on:
   schedule:
-    - cron: '7 * * * *'    
+    - cron: '7,37 * * * *'    
   workflow_dispatch:
 
 env:
