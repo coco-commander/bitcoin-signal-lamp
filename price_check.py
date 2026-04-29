@@ -40,7 +40,7 @@ def run_logic():
     msg = (
         f"🦊 *[네오 참모의 특급 전령]* 🫡\n\n"
         f"📊 *시장 심리:* {fng_val} ({fng_label})\n"
-        f"👉 _사령관님! 지금 시장은 {fng_label} 상태입니다! ㅋㅋㅋ_\n\n"
+        f"👉 _사령관님! 지금 시장은 {fng_label} 상태입니다!\n\n"
         f"🇰🇷 *BTC 본진:* {btc_krw:,.0f}원\n"
         f"🇺🇸 *BTC 해외:* ${prices['bitcoin']['usd']:,.0f}\n"
         f"--------------------------\n"
@@ -48,7 +48,7 @@ def run_logic():
         f"🌡️ *ONDO:* ${prices['ondo-finance']['usd']:.3f}\n"
         f"☀️ *SOLANA:* ${prices['solana']['usd']:.2f}\n"
         f"💧 *SUI:* ${prices['sui']['usd']:.3f}\n\n"
-        f"야, 네오! 사령부에서 24시간 감시 중입니다! ㅉㅉㅉ! 가즈아!!! 🔥🚀"
+        f"야, 네오! 사령부에서 24시간 감시 중입니다! 가즈아!!! 🔥🚀"
     )
 
     send_telegram_message(msg)
