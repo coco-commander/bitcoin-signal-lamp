@@ -55,7 +55,7 @@ def run_logic():
     if current_price_usd <= TARGET_PRICE_3:
         fishing_report = "🚨 [긴급: 3차 거미줄 구역 돌입!] 시베리아 기단 도착! 🥶"
     elif current_price_usd <= TARGET_PRICE_2:
-        fishing_report = "🛒 [알림: 2차 거미줄 체결 중!] 메인 쇼핑 타임입니다! ㅉㅉㅉ!"
+        fishing_report = "🛒 [알림: 2차 거미줄 체결 중!] 메인 쇼핑 타임입니다!"
     elif current_price_usd <= TARGET_PRICE_1:
         fishing_report = "🕸️ [주의: 1차 거미줄 작동!] 꽃샘추위가 시작됐습니다!"
 
@@ -82,7 +82,7 @@ def run_logic():
                        f"🇺🇸 해외가: `${usd_formatted}`\n"
                        f"📈 변동률: `{change_rate:.2f}%` {emoji}\n"
                        f"------------------------\n"
-                       f"사령관님, 즉시 전황판을 확인하십시오! ㅉㅉㅉ!")
+                       f"사령관님, 즉시 전황판을 확인하십시오!!!")
 
     # 수첩 갱신
     with open(HISTORY_FILE, "w") as f:
