@@ -2,35 +2,67 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>코코 사령관님의 비밀 벙커</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCO 사령관님의 비밀 벙커</title>
     <style>
-        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; text-align: center; padding-top: 50px; }
-        .bunker-box { border: 2px solid #238636; display: inline-block; padding: 20px; border-radius: 15px; background-color: #161b22; }
-        h1 { color: #238636; }
-        .price { font-size: 2em; font-weight: bold; color: #58a6ff; }
-        .status { margin-top: 20px; font-style: italic; color: #8b949e; }
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .bunker-box { border: 2px solid #238636; padding: 30px; border-radius: 20px; background-color: #161b22; box-shadow: 0 0 20px rgba(35, 134, 54, 0.3); width: 90%; max-width: 500px; }
+        h1 { color: #238636; font-size: 1.5rem; margin-bottom: 5px; }
+        .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; }
+        .price-main { font-size: 2.5rem; font-weight: bold; color: #58a6ff; margin: 20px 0; }
+        .alt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; border-top: 1px solid #30363d; padding-top: 20px; }
+        .alt-item { background: #0d1117; padding: 10px; border-radius: 10px; border: 1px solid #30363d; }
+        .alt-name { font-size: 0.8rem; color: #8b949e; }
+        .alt-price { font-size: 1.1rem; color: #d2a8ff; font-weight: bold; }
+        .footer { margin-top: 20px; font-size: 0.8rem; color: #238636; }
+        .fng-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; background: #238636; color: white; font-size: 0.8rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="bunker-box">
+        <div class="fng-badge" id="fng-val">시장 심리 파악 중...</div>
         <h1>🦊 COCO COMMANDER BUNKER 🫡</h1>
-        <p>비밀 기지(Altcoins Branch)에서 전송 중...</p>
-        <hr border="1" color="#238636">
-        <p>현재 비트코인 전황</p>
-        <div class="price" id="btc-price">보급 대기 중...</div>
-        <p class="status">"75,200달러 거미줄 체결 성공! 다음 타겟 대기 중..."</p>
-        <p>🧙‍♂️✨🌳 행운이 팡팡! 🔥🍀🚀</p>
+        <div class="subtitle">비밀 기지(Altcoins Branch) 데이터 수신 중...</div>
+        
+        <div class="price-main" id="btc-price">보급 대기...</div>
+
+        <div class="alt-grid">
+            <div class="alt-item"><div class="alt-name">🎬 RENDER</div><div class="alt-price" id="render-price">-</div></div>
+            <div class="alt-item"><div class="alt-name">🌡️ ONDO</div><div class="alt-price" id="ondo-price">-</div></div>
+            <div class="alt-item"><div class="alt-name">☀️ SOLANA</div><div class="alt-price" id="sol-price">-</div></div>
+            <div class="alt-item"><div class="alt-name">💧 SUI</div><div class="alt-price" id="sui-price">-</div></div>
+        </div>
+
+        <p style="color: #e3b341;">"75,200달러 거미줄 성공! 본진 사수 중!"</p>
+        <div class="footer">🧙‍♂️✨🌳 행운이 팡팡! 🔥🍀🚀</div>
     </div>
 
     <script>
-        async function fetchPrice() {
-            const res = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
-            const data = await res.json();
-            const price = data[0].trade_price;
-            document.getElementById('btc-price').innerText = price.toLocaleString() + ' 원';
+        async function updateDashboard() {
+            try {
+                // 1. 업비트 BTC 가격
+                const btcRes = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
+                const btcData = await btcRes.json();
+                document.getElementById('btc-price').innerText = btcData[0].trade_price.toLocaleString() + ' 원';
+
+                // 2. 코인게코 알트코인 가격
+                const altRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=render-token,ondo,solana,sui&vs_currencies=usd');
+                const altData = await altRes.json();
+                document.getElementById('render-price').innerText = '$' + altData['render-token'].usd.toFixed(3);
+                document.getElementById('ondo-price').innerText = '$' + altData['ondo'].usd.toFixed(3);
+                document.getElementById('sol-price').innerText = '$' + altData['solana'].usd.toFixed(2);
+                document.getElementById('sui-price').innerText = '$' + altData['sui'].usd.toFixed(3);
+
+                // 3. 공포탐욕 지수
+                const fngRes = await fetch('https://api.alternative.me/fng/');
+                const fngData = await fngRes.json();
+                document.getElementById('fng-val').innerText = '시장 심리: ' + fngData.data[0].value + ' (' + fngData.data[0].value_classification + ')';
+            } catch (e) {
+                console.log("데이터 보급 일시 중단!");
+            }
         }
-        fetchPrice();
-        setInterval(fetchPrice, 10000); // 10초마다 갱신! ㅋㅋㅋ
+        updateDashboard();
+        setInterval(updateDashboard, 30000); // 30초마다 자동 갱신! ㅉㅉㅉ!
     </script>
 </body>
 </html>
