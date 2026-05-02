@@ -1,23 +1,17 @@
-name: Daily Bitcoin Monitor
+name: Secret Bitcoin Monitor
 on:
   schedule:
     - cron: '7,37 * * * *'    
   workflow_dispatch:
 
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: 'altcoins'
+          ref: 'altcoins' # <--- 사령관님의 비밀 브랜치 고정!
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,27 +20,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install requests
 
       - name: Run price check
-        # [핵심 보안!] 금고에서 보물을 꺼내 로봇에게 전달합니다.
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python price_check.py || echo "Price check failed but continuing..."
+        run: python price_check.py # 에러 시 로그 확인을 위해 깔끔하게 실행!
 
       - name: Commit and Push changes
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # [핵심 수리] 파일이 없어도 에러나지 않게 빈 파일을 먼저 생성합니다! ㅉㅉㅉ!
-          touch history.txt last_price.txt
-          
-          date >> history.txt
-          git add history.txt last_price.txt
-          
-          # 변경사항이 없어도 에러 없이 넘어가도록 설정했습니다.
-          git commit -m "Auto-update BTC price: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
-          git push origin HEAD
+          touch last_price.txt
+          git add last_price.txt
+          git commit -m "Update history" || echo "No changes"
+          git push origin altcoins # 비밀 기지로 다시 보고!
