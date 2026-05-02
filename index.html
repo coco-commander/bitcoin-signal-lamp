@@ -38,27 +38,37 @@
     </div>
 
     <script>
-        async function updateDashboard() {
+async function updateDashboard() {
             try {
-                // 1. 업비트 BTC 가격
+                // 1. 업비트 BTC 가격 (원화)
                 const btcRes = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
                 const btcData = await btcRes.json();
                 document.getElementById('btc-price').innerText = btcData[0].trade_price.toLocaleString() + ' 원';
 
-                // 2. 코인게코 알트코인 가격
-                const altRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=render-token,ondo,solana,sui&vs_currencies=usd');
-                const altData = await altRes.json();
-                document.getElementById('render-price').innerText = '$' + altData['render-token'].usd.toFixed(3);
-                document.getElementById('ondo-price').innerText = '$' + altData['ondo'].usd.toFixed(3);
-                document.getElementById('sol-price').innerText = '$' + altData['solana'].usd.toFixed(2);
-                document.getElementById('sui-price').innerText = '$' + altData['sui'].usd.toFixed(3);
+                // 2. 바이낸스 가격 (달러) - 더 빠르고 안정적인 보급로로 교체! ㅉㅉㅉ!
+                const coins = {
+                    'render-price': 'RENDERUSDT',
+                    'ondo-price': 'ONDOUSDT',
+                    'sol-price': 'SOLUSDT',
+                    'sui-price': 'SUIUSDT'
+                };
+
+                for (const [id, symbol] of Object.entries(coins)) {
+                    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+                    const data = await res.json();
+                    let price = parseFloat(data.price);
+                    
+                    // 가격 자릿수 맞춤 서비스! ㅋㅋㅋ
+                    let formattedPrice = price > 10 ? price.toFixed(2) : price.toFixed(3);
+                    document.getElementById(id).innerText = '$' + formattedPrice;
+                }
 
                 // 3. 공포탐욕 지수
                 const fngRes = await fetch('https://api.alternative.me/fng/');
                 const fngData = await fngRes.json();
                 document.getElementById('fng-val').innerText = '시장 심리: ' + fngData.data[0].value + ' (' + fngData.data[0].value_classification + ')';
             } catch (e) {
-                console.log("데이터 보급 일시 중단!");
+                console.log("보급로 차단! 재시도 중...");
             }
         }
         updateDashboard();
