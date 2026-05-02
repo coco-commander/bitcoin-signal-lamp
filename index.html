@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>코코 사령관님의 비밀 벙커</title>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; text-align: center; padding-top: 50px; }
+        .bunker-box { border: 2px solid #238636; display: inline-block; padding: 20px; border-radius: 15px; background-color: #161b22; }
+        h1 { color: #238636; }
+        .price { font-size: 2em; font-weight: bold; color: #58a6ff; }
+        .status { margin-top: 20px; font-style: italic; color: #8b949e; }
+    </style>
+</head>
+<body>
+    <div class="bunker-box">
+        <h1>🦊 COCO COMMANDER BUNKER 🫡</h1>
+        <p>비밀 기지(Altcoins Branch)에서 전송 중...</p>
+        <hr border="1" color="#238636">
+        <p>현재 비트코인 전황</p>
+        <div class="price" id="btc-price">보급 대기 중...</div>
+        <p class="status">"75,200달러 거미줄 체결 성공! 다음 타겟 대기 중..."</p>
+        <p>🧙‍♂️✨🌳 행운이 팡팡! 🔥🍀🚀</p>
+    </div>
+
+    <script>
+        async function fetchPrice() {
+            const res = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
+            const data = await res.json();
+            const price = data[0].trade_price;
+            document.getElementById('btc-price').innerText = price.toLocaleString() + ' 원';
+        }
+        fetchPrice();
+        setInterval(fetchPrice, 10000); // 10초마다 갱신! ㅋㅋㅋ
+    </script>
+</body>
+</html>
