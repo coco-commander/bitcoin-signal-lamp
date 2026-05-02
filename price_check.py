@@ -32,11 +32,13 @@ def get_btc_price_usd():
         print(f"해외 API 오류: {e}")
         return 0.0
 
+# 기존 코드의 send_telegram_message 함수 안에 print 추가
 def send_telegram_message(message):
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
         payload = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
-        requests.post(url, json=payload, timeout=10)
+        response = requests.post(url, json=payload, timeout=10)
+        print(f"응답 결과: {response.status_code}, {response.text}") # 이 줄을 추가!
     except Exception as e:
         print(f"텔레그램 발송 오류: {e}")
 
