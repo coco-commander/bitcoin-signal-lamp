@@ -7,13 +7,12 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 HISTORY_FILE = "last_price.txt"
 
-# 사령관님의 거미줄 타겟가 (달러 기준)
-TARGET_PRICE_1 = 75200  # 1차 거미줄
-TARGET_PRICE_2 = 72500  # 2차 거미줄
-TARGET_PRICE_3 = 69800  # 3차 거미줄
+# 사령관님의 거미줄 타겟가 (달러 기준) - 유령 공백 싹 제거 완료! ㅉㅉㅉ!
+TARGET_PRICE_1 = 75200
+TARGET_PRICE_2 = 72500
+TARGET_PRICE_3 = 69800
 # ---------------------------
 
-# 1. 업비트 원화 가격 가져오기
 def get_btc_price_upbit():
     try:
         url = "https://api.upbit.com/v1/ticker?markets=KRW-BTC"
@@ -23,21 +22,23 @@ def get_btc_price_upbit():
         print(f"업비트 API 오류: {e}")
         return 0
 
-# 2. 해외 실제 달러 가격 가져오기
 def get_btc_price_usd():
     try:
-        # 응답 지연 방지를 위해 코인게코 대신 업비트 BTC/USDT 혹은 대체 API 사용 가능하나 기존 유지
+        # 코인게코가 가끔 응답이 늦을 때를 대비해 타임아웃 추가!
         url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         return response.json()['bitcoin']['usd']
     except Exception as e:
         print(f"해외 API 오류: {e}")
         return 0.0
 
 def send_telegram_message(message):
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
-    requests.post(url, json=payload)
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        payload = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
+        requests.post(url, json=payload, timeout=10)
+    except Exception as e:
+        print(f"텔레그램 발송 오류: {e}")
 
 def run_logic():
     current_price_krw = get_btc_price_upbit()
@@ -50,7 +51,6 @@ def run_logic():
     krw_formatted = format(int(current_price_krw), ',')
     usd_formatted = format(current_price_usd, ',.0f')
     
-    # [전략 1] 거미줄 감지 로직
     fishing_report = ""
     if current_price_usd <= TARGET_PRICE_3:
         fishing_report = "🚨 [긴급: 3차 거미줄 구역 돌입!] 시베리아 기단 도착! 🥶"
@@ -59,20 +59,18 @@ def run_logic():
     elif current_price_usd <= TARGET_PRICE_1:
         fishing_report = "🕸️ [주의: 1차 거미줄 작동!] 꽃샘추위가 시작됐습니다!"
 
-    # 기본 메시지
     message = (f"📢 *[비트코인 글로벌 보고]*\n"
                f"🇰🇷 업비트: `{krw_formatted}원`\n"
                f"🇺🇸 해외가: `${usd_formatted}`\n"
                f"🧙‍♂️✨🌳 행운이 팡팡! 🔥🍀🚀")
 
-    # [전략 2] 가격 변동성 체크 (비상 무전 모드)
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
-            last_price = float(f.read())
+            content = f.read().strip()
+            last_price = float(content) if content else current_price_krw
         
         change_rate = ((current_price_krw - last_price) / last_price) * 100
         
-        # 3% 이상 변동하거나 거미줄에 걸렸을 때 메시지 강화
         if abs(change_rate) >= 3 or fishing_report != "":
             emoji = "🚀 급등!!" if change_rate > 0 else "📉 급락!!"
             message = (f"🚨 *[사령관님 비상 무전!]*\n"
@@ -84,7 +82,6 @@ def run_logic():
                        f"------------------------\n"
                        f"사령관님, 즉시 전황판을 확인하십시오!!!")
 
-    # 수첩 갱신
     with open(HISTORY_FILE, "w") as f:
         f.write(str(current_price_krw))
         
