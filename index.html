@@ -9,7 +9,8 @@
         .bunker-box { border: 2px solid #238636; padding: 30px; border-radius: 20px; background-color: #161b22; box-shadow: 0 0 20px rgba(35, 134, 54, 0.3); width: 90%; max-width: 500px; text-align: center; }
         h1 { color: #238636; font-size: 1.5rem; margin-bottom: 5px; }
         .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; }
-        .price-main { font-size: 2.5rem; font-weight: bold; color: #58a6ff; margin: 20px 0; }
+        .price-main { font-size: 2.5rem; font-weight: bold; color: #58a6ff; margin-top: 20px; margin-bottom: 5px; }
+        .price-usd { font-size: 1.2rem; color: #8b949e; margin-bottom: 20px; font-weight: bold; }
         .alt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; border-top: 1px solid #30363d; padding-top: 20px; }
         .alt-item { background: #0d1117; padding: 10px; border-radius: 10px; border: 1px solid #30363d; }
         .alt-name { font-size: 0.8rem; color: #8b949e; }
@@ -25,6 +26,7 @@
         <div class="subtitle">비밀 기지(Altcoins Branch) 데이터 수신 중...</div>
         
         <div class="price-main" id="btc-price">보급 대기...</div>
+        <div class="price-usd" id="btc-usd-price">$-</div>
 
         <div class="alt-grid">
             <div class="alt-item"><div class="alt-name">🎬 RENDER</div><div class="alt-price" id="render-price">-</div></div>
@@ -45,8 +47,9 @@
                 const btcData = await btcRes.json();
                 document.getElementById('btc-price').innerText = btcData[0].trade_price.toLocaleString() + ' 원';
 
-                // 2. 바이낸스 가격 (달러) - 더 빠르고 안정적인 보급로! ㅉㅉㅉ!
+                // 2. 바이낸스 BTC 및 알트코인 가격 (달러)
                 const coins = {
+                    'btc-usd-price': 'BTCUSDT',
                     'render-price': 'RENDERUSDT',
                     'ondo-price': 'ONDOUSDT',
                     'sol-price': 'SOLUSDT',
@@ -58,7 +61,13 @@
                         const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
                         const data = await res.json();
                         let price = parseFloat(data.price);
-                        let formattedPrice = price > 10 ? price.toFixed(2) : price.toFixed(3);
+                        
+                        let formattedPrice;
+                        if (symbol === 'BTCUSDT') {
+                            formattedPrice = price.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                        } else {
+                            formattedPrice = price > 10 ? price.toFixed(2) : price.toFixed(3);
+                        }
                         document.getElementById(id).innerText = '$' + formattedPrice;
                     } catch (err) {
                         console.log(symbol + " 보급 실패");
@@ -74,7 +83,7 @@
             }
         }
         updateDashboard();
-        setInterval(updateDashboard, 30000); // 30초마다 자동 갱신! ㅉㅉㅉ!
+        setInterval(updateDashboard, 30000);
     </script>
 </body>
 </html>
