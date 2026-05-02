@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: 'altcoins' # <--- 사령관님의 비밀 브랜치 고정!
+          ref: 'altcoins' 
 
       - name: Set up Python
         uses: actions/setup-python@v5
