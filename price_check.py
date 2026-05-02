@@ -14,55 +14,57 @@ TARGET_PRICE_3 = 69800
 
 def get_data(url):
     try:
-        res = requests.get(url, timeout=10)
+        res = requests.get(url, timeout=15)
+        res.raise_for_status() # 에러 발생 시 예외 호출
         return res.json()
-    except:
+    except Exception as e:
+        print(f"API 호출 오류: {e}")
         return None
 
 def run_logic():
-    # 1. 비트코인 및 알트코인 시세 (Coingecko)
-    # RENDER, ONDO, SOLANA, SUI 추가! ㅉㅉㅉ!
+    # 1. 코인게코 시세 (ID 값 정밀 확인 완료!)
     coin_url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,render-token,ondo,solana,sui&vs_currencies=usd"
     prices = get_data(coin_url)
     
     # 2. 업비트 원화 가격
-    upbit_prices = get_data("https://api.upbit.com/v1/ticker?markets=KRW-BTC")
+    upbit_data = get_data("https://api.upbit.com/v1/ticker?markets=KRW-BTC")
     
-    # 3. 시장 심리 지수 (Fear & Greed Index)
+    # 3. 시장 심리 지수
     fng_data = get_data("https://api.alternative.me/fng/")
     
-    if not prices or not upbit_prices or not fng_data:
-        print("데이터 보급 실패!")
+    if not prices or not upbit_data or not fng_data:
+        print("필수 데이터 부족으로 중단합니다!")
         return
 
-    # 데이터 정리
-    btc_usd = prices['bitcoin']['usd']
-    btc_krw = upbit_prices[0]['trade_price']
-    render = prices['render-token']['usd']
-    ondo = prices['ondo']['usd']
-    sol = prices['solana']['usd']
-    sui = prices['sui']['usd']
+    # 데이터 추출 (안전하게 get() 사용)
+    btc_usd = prices.get('bitcoin', {}).get('usd', 0)
+    render = prices.get('render-token', {}).get('usd', 0)
+    ondo = prices.get('ondo', {}).get('usd', 0)
+    sol = prices.get('solana', {}).get('usd', 0)
+    sui = prices.get('sui', {}).get('usd', 0)
+    
+    btc_krw = upbit_data[0]['trade_price']
     
     fng_value = fng_data['data'][0]['value']
     fng_class = fng_data['data'][0]['value_classification']
 
-    # 거미줄 로직
-    fishing_report = ""
-    if btc_usd <= TARGET_PRICE_3: fishing_report = "🚨 [긴급: 3차 거미줄!]"
-    elif btc_usd <= TARGET_PRICE_2: fishing_report = "🛒 [알림: 2차 거미줄!]"
-    elif btc_usd <= TARGET_PRICE_1: fishing_report = "🕸️ [주의: 1차 거미줄!]"
-
-    # 변동률 계산
+    # 변동률 및 메시지 조립
     change_msg = ""
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
-            last_p = float(f.read().strip() or btc_krw)
+            content = f.read().strip()
+            last_p = float(content) if content else btc_krw
+        
         change_rate = ((btc_krw - last_p) / last_p) * 100
         if abs(change_rate) >= 3:
             emoji = "🚀 급등!!" if change_rate > 0 else "📉 급락!!"
             change_msg = f"\n⚠️ *변동성 감지!*\n📈 변동률: `{change_rate:.2f}%` {emoji}\n"
 
-    # 메시지 조립 (예전 감성 그대로! ㅋㅋㅋ)
+    fishing_report = ""
+    if btc_usd <= TARGET_PRICE_3: fishing_report = "\n🚨 *[긴급: 3차 거미줄!]*"
+    elif btc_usd <= TARGET_PRICE_2: fishing_report = "\n🛒 *[알림: 2차 거미줄!]*"
+    elif btc_usd <= TARGET_PRICE_1: fishing_report = "\n🕸️ *[주의: 1차 거미줄!]*"
+
     message = (
         f"🦊 *[네오 참모의 특급 전령]* 🫡\n\n"
         f"📊 *시장 심리:* {fng_value} ({fng_class})\n"
@@ -74,15 +76,15 @@ def run_logic():
         f"🌡️ *ONDO:* `${ondo:.3f}`\n"
         f"☀️ *SOLANA:* `${sol:.2f}`\n"
         f"💧 *SUI:* `${sui:.3f}`\n"
-        f"{change_msg}"
-        f"{fishing_report}\n"
+        f"{change_msg}{fishing_report}\n"
         f"----------------------------\n"
         f"야, 네오! 사령부에서 24시간 감시 중입니다! ㅉㅉㅉ!\n"
         f"가즈아!!! 🔥🚀"
     )
 
-    # 수첩 갱신 및 발송
-    with open(HISTORY_FILE, "w") as f: f.write(str(btc_krw))
+    # 발송 및 기록
+    with open(HISTORY_FILE, "w") as f:
+        f.write(str(btc_krw))
     
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     requests.post(url, json={"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"})
