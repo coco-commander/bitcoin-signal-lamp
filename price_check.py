@@ -15,46 +15,41 @@ TARGET_PRICE_3 = 69800
 def get_data(url):
     try:
         res = requests.get(url, timeout=15)
-        res.raise_for_status() # 에러 발생 시 예외 호출
+        res.raise_for_status()
         return res.json()
     except Exception as e:
         print(f"API 호출 오류: {e}")
         return None
 
 def run_logic():
-    # 1. 코인게코 시세 (ID 값 정밀 확인 완료!)
-    coin_url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,render-token,ondo,solana,sui&vs_currencies=usd"
+    # [수정] ondo 를 ondo-finance 로 변경했습니다! ㅉㅉㅉ!
+    coin_url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,render-token,ondo-finance,solana,sui&vs_currencies=usd"
     prices = get_data(coin_url)
     
-    # 2. 업비트 원화 가격
     upbit_data = get_data("https://api.upbit.com/v1/ticker?markets=KRW-BTC")
-    
-    # 3. 시장 심리 지수
     fng_data = get_data("https://api.alternative.me/fng/")
     
     if not prices or not upbit_data or not fng_data:
-        print("필수 데이터 부족으로 중단합니다!")
+        print("데이터 부족!")
         return
 
-    # 데이터 추출 (안전하게 get() 사용)
+    # 데이터 추출 (키값도 ondo-finance로 매칭!)
     btc_usd = prices.get('bitcoin', {}).get('usd', 0)
     render = prices.get('render-token', {}).get('usd', 0)
-    ondo = prices.get('ondo', {}).get('usd', 0)
+    ondo = prices.get('ondo-finance', {}).get('usd', 0) # <--- 여기! ㅋㅋㅋ
     sol = prices.get('solana', {}).get('usd', 0)
     sui = prices.get('sui', {}).get('usd', 0)
     
     btc_krw = upbit_data[0]['trade_price']
-    
     fng_value = fng_data['data'][0]['value']
     fng_class = fng_data['data'][0]['value_classification']
 
-    # 변동률 및 메시지 조립
+    # 변동률 계산
     change_msg = ""
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
             content = f.read().strip()
             last_p = float(content) if content else btc_krw
-        
         change_rate = ((btc_krw - last_p) / last_p) * 100
         if abs(change_rate) >= 3:
             emoji = "🚀 급등!!" if change_rate > 0 else "📉 급락!!"
@@ -82,10 +77,7 @@ def run_logic():
         f"가즈아!!! 🔥🚀"
     )
 
-    # 발송 및 기록
-    with open(HISTORY_FILE, "w") as f:
-        f.write(str(btc_krw))
-    
+    with open(HISTORY_FILE, "w") as f: f.write(str(btc_krw))
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     requests.post(url, json={"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"})
 
