@@ -1,57 +1,87 @@
 import os
 import requests
+import json
 
+# --- [사령관님 설정 구역] ---
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+HISTORY_FILE = "last_price.txt"
 
-def get_coin_prices():
-    ids = "bitcoin,render-token,ondo-finance,solana,sui"
-    url = f"https://api.coingecko.com/api/v3/simple/price?ids={ids}&vs_currencies=usd"
-    try:
-        return requests.get(url).json()
-    except: return None
+TARGET_PRICE_1 = 75200  # 1차 거미줄 (체결 완료 지점!)
+TARGET_PRICE_2 = 72500  # 2차 거미줄
+TARGET_PRICE_3 = 69800  # 3차 거미줄
+# ---------------------------
 
-def get_btc_krw():
+def get_btc_price_upbit():
     try:
         url = "https://api.upbit.com/v1/ticker?markets=KRW-BTC"
-        return requests.get(url).json()[0]['trade_price']
-    except: return 0
+        response = requests.get(url)
+        return response.json()[0]['trade_price']
+    except Exception as e:
+        print(f"업비트 API 오류: {e}")
+        return 0
 
-def get_fear_and_greed():
+def get_btc_price_usd():
     try:
-        url = "https://api.alternative.me/fng/"
-        res = requests.get(url).json()
-        return res['data'][0]['value'], res['data'][0]['value_classification']
-    except: return "??", "알 수 없음"
+        url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+        response = requests.get(url, timeout=10)
+        return response.json()['bitcoin']['usd']
+    except Exception as e:
+        print(f"해외 API 오류: {e}")
+        return 0.0
 
 def send_telegram_message(message):
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
-    requests.post(url, json=payload)
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        payload = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
+        response = requests.post(url, json=payload, timeout=10)
+        print(f"텔레그램 응답: {response.status_code}")
+    except Exception as e:
+        print(f"텔레그램 발송 오류: {e}")
 
 def run_logic():
-    prices = get_coin_prices()
-    btc_krw = get_btc_krw()
-    fng_val, fng_label = get_fear_and_greed()
+    current_price_krw = get_btc_price_upbit()
+    current_price_usd = get_btc_price_usd()
     
-    if not prices: return
+    if current_price_krw == 0 or current_price_usd == 0:
+        return
 
-    # 함대 정찰 보고서 작성
-    msg = (
-        f"🦊 *[네오 참모의 특급 전령]* 🫡\n\n"
-        f"📊 *시장 심리:* {fng_val} ({fng_label})\n"
-        f"👉 _사령관님! 지금 시장은 {fng_label} 상태입니다!\n\n"
-        f"🇰🇷 *BTC 본진:* {btc_krw:,.0f}원\n"
-        f"🇺🇸 *BTC 해외:* ${prices['bitcoin']['usd']:,.0f}\n"
-        f"--------------------------\n"
-        f"📽️ *RENDER:* ${prices['render-token']['usd']:.3f}\n"
-        f"🌡️ *ONDO:* ${prices['ondo-finance']['usd']:.3f}\n"
-        f"☀️ *SOLANA:* ${prices['solana']['usd']:.2f}\n"
-        f"💧 *SUI:* ${prices['sui']['usd']:.3f}\n\n"
-        f"야, 네오! 사령부에서 24시간 감시 중입니다! 가즈아!!! 🔥🚀"
-    )
+    krw_formatted = format(int(current_price_krw), ',')
+    usd_formatted = format(current_price_usd, ',.0f')
+    
+    fishing_report = ""
+    if current_price_usd <= TARGET_PRICE_3:
+        fishing_report = "🚨 [긴급: 3차 거미줄!] 시베리아 기단! 🥶"
+    elif current_price_usd <= TARGET_PRICE_2:
+        fishing_report = "🛒 [알림: 2차 거미줄!] 메인 쇼핑 타임!"
+    elif current_price_usd <= TARGET_PRICE_1:
+        fishing_report = "🕸️ [주의: 1차 거미줄!] 어제 잡은 그 가격대입니다!"
 
-    send_telegram_message(msg)
+    message = (f"📢 *[비트코인 글로벌 보고]*\n"
+               f"🇰🇷 업비트: `{krw_formatted}원`\n"
+               f"🇺🇸 해외가: `${usd_formatted}`\n"
+               f"🧙‍♂️✨🌳 행운이 팡팡! 🔥🍀🚀")
+
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r") as f:
+            content = f.read().strip()
+            last_price = float(content) if content else current_price_krw
+        
+        change_rate = ((current_price_krw - last_price) / last_price) * 100
+        
+        if abs(change_rate) >= 3 or fishing_report != "":
+            emoji = "🚀 급등!!" if change_rate > 0 else "📉 급락!!"
+            message = (f"🚨 *[사령관님 비밀 무전!]*\n"
+                       f"------------------------\n"
+                       f"{fishing_report if fishing_report else '⚠️ 변동성 감지!'}\n"
+                       f"📈 변동률: `{change_rate:.2f}%` {emoji}\n"
+                       f"------------------------\n"
+                       f"사령관님, 즉시 전황판을 확인하십시오!!!")
+
+    with open(HISTORY_FILE, "w") as f:
+        f.write(str(current_price_krw))
+        
+    send_telegram_message(message)
 
 if __name__ == "__main__":
     run_logic()
