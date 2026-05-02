@@ -63,7 +63,7 @@ def run_logic():
     message = (
         f"🦊 *[네오 참모의 특급 전령]* 🫡\n\n"
         f"📊 *시장 심리:* {fng_value} ({fng_class})\n"
-        f"👉 _사령관님! 지금 시장은 {fng_class} 상태입니다!\n\n"
+        f"👉 _사령관님! 지금 시장은 {fng_class} 상태입니다! ㅋㅋㅋ_\n\n"
         f"🇰🇷 *BTC 본진:* `{format(int(btc_krw), ',')}원`\n"
         f"🇺🇸 *BTC 해외:* `${format(btc_usd, ',.0f')}`\n"
         f"----------------------------\n"
@@ -73,7 +73,7 @@ def run_logic():
         f"💧 *SUI:* `${sui:.3f}`\n"
         f"{change_msg}{fishing_report}\n"
         f"----------------------------\n"
-        f"야, 네오! 사령부에서 24시간 감시 중입니다!\n"
+        f"야, 네오! 사령부에서 24시간 감시 중입니다! ㅉㅉㅉ!\n"
         f"가즈아!!! 🔥🚀"
     )
 
