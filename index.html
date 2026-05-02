@@ -6,7 +6,7 @@
     <title>COCO 사령관님의 비밀 벙커</title>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .bunker-box { border: 2px solid #238636; padding: 30px; border-radius: 20px; background-color: #161b22; box-shadow: 0 0 20px rgba(35, 134, 54, 0.3); width: 90%; max-width: 500px; }
+        .bunker-box { border: 2px solid #238636; padding: 30px; border-radius: 20px; background-color: #161b22; box-shadow: 0 0 20px rgba(35, 134, 54, 0.3); width: 90%; max-width: 500px; text-align: center; }
         h1 { color: #238636; font-size: 1.5rem; margin-bottom: 5px; }
         .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; }
         .price-main { font-size: 2.5rem; font-weight: bold; color: #58a6ff; margin: 20px 0; }
@@ -38,14 +38,14 @@
     </div>
 
     <script>
-async function updateDashboard() {
+        async function updateDashboard() {
             try {
                 // 1. 업비트 BTC 가격 (원화)
                 const btcRes = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
                 const btcData = await btcRes.json();
                 document.getElementById('btc-price').innerText = btcData[0].trade_price.toLocaleString() + ' 원';
 
-                // 2. 바이낸스 가격 (달러) - 더 빠르고 안정적인 보급로로 교체! ㅉㅉㅉ!
+                // 2. 바이낸스 가격 (달러) - 더 빠르고 안정적인 보급로! ㅉㅉㅉ!
                 const coins = {
                     'render-price': 'RENDERUSDT',
                     'ondo-price': 'ONDOUSDT',
@@ -54,13 +54,15 @@ async function updateDashboard() {
                 };
 
                 for (const [id, symbol] of Object.entries(coins)) {
-                    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
-                    const data = await res.json();
-                    let price = parseFloat(data.price);
-                    
-                    // 가격 자릿수 맞춤 서비스! ㅋㅋㅋ
-                    let formattedPrice = price > 10 ? price.toFixed(2) : price.toFixed(3);
-                    document.getElementById(id).innerText = '$' + formattedPrice;
+                    try {
+                        const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+                        const data = await res.json();
+                        let price = parseFloat(data.price);
+                        let formattedPrice = price > 10 ? price.toFixed(2) : price.toFixed(3);
+                        document.getElementById(id).innerText = '$' + formattedPrice;
+                    } catch (err) {
+                        console.log(symbol + " 보급 실패");
+                    }
                 }
 
                 // 3. 공포탐욕 지수
