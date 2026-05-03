@@ -6,7 +6,7 @@
     <title>COCO 사령관님의 비밀 벙커</title>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .bunker-box { border: 2px solid #238636; padding: 30px; border-radius: 20px; background-color: #161b22; box-shadow: 0 0 20px rgba(35, 134, 54, 0.3); width: 90%; max-width: 500px; text-align: center; }
+        .bunker-box { border: 2px solid #238636; padding: 30px; border-radius: 20px; background-color: #161b22; box-shadow: 0 0 20px rgba(35, 134, 54, 0.3); width: 90%; max-width: 500px; text-align: center; transition: all 0.5s ease; }
         h1 { color: #238636; font-size: 1.5rem; margin-bottom: 5px; }
         .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; }
         .price-main { font-size: 2.5rem; font-weight: bold; color: #58a6ff; margin-top: 20px; margin-bottom: 5px; }
@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-    <div class="bunker-box">
+    <div class="bunker-box" id="bunker-main">
         <div class="fng-badge" id="fng-val">시장 심리 파악 중...</div>
         <h1>🦊 COCO COMMANDER BUNKER 🫡</h1>
         <div class="subtitle">비밀 기지(Altcoins Branch) 데이터 수신 중...</div>
@@ -40,12 +40,32 @@
     </div>
 
     <script>
+        let lastBtcPrice = 0;
+
         async function updateDashboard() {
             try {
                 // 1. 업비트 BTC 가격 (원화)
                 const btcRes = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
                 const btcData = await btcRes.json();
-                document.getElementById('btc-price').innerText = btcData[0].trade_price.toLocaleString() + ' 원';
+                const currentPrice = btcData[0].trade_price;
+
+                // 레이저 경보 시스템 작동! ㅋㅋㅋ
+                const box = document.getElementById('bunker-main');
+                if (lastBtcPrice > 0 && currentPrice !== lastBtcPrice) {
+                    if (currentPrice > lastBtcPrice) {
+                        box.style.borderColor = '#238636'; // 상승 초록 레이저
+                        box.style.boxShadow = '0 0 40px #238636';
+                    } else {
+                        box.style.borderColor = '#da3633'; // 하락 빨간 레이저
+                        box.style.boxShadow = '0 0 40px #da3633';
+                    }
+                    setTimeout(() => {
+                        box.style.borderColor = '#238636';
+                        box.style.boxShadow = '0 0 20px rgba(35, 134, 54, 0.3)';
+                    }, 2000);
+                }
+                lastBtcPrice = currentPrice;
+                document.getElementById('btc-price').innerText = currentPrice.toLocaleString() + ' 원';
 
                 // 2. 바이낸스 BTC 및 알트코인 가격 (달러)
                 const coins = {
@@ -83,7 +103,7 @@
             }
         }
         updateDashboard();
-        setInterval(updateDashboard, 30000);
+        setInterval(updateDashboard, 15000); // 15초마다 레이저 체크! ㅉㅉㅉ!
     </script>
 </body>
 </html>
