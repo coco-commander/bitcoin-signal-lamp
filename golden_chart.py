@@ -59,8 +59,10 @@ def draw_v15_2_final():
         plt.tight_layout()
         
         print(f"✅ 성공! 사령관님, 이제 예쁜 차트 보실 일만 남았습니다! ㅋㅋㅋ")
-        plt.show()
-
+    #    plt.show()
+        plt.savefig('golden_chart.png') # 차트를 파일로 꽉 붙잡아라!
+        print(f"✨ 'golden_chart.png' 파일이 생성되었습니다. 왼쪽 목록을 확인하세요!")
+        
     except Exception as e:
         print(f"네오가 이번엔 진짜 에러를 다 잡았는데... 혹시 또? : {e}")
 
