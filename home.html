@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사령관의 영지: 무위의 정원</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background-color: #fcfaf5; /* 마음이 편안한 미색 */
+            font-family: 'Pretendard', sans-serif;
+            color: #2f4f4f; /* 깊은 숲의 색 (다크 슬레이트 그레이) */
+        }
+
+        .garden-gate {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 3s forwards; /* 안개가 걷히듯 서서히 */
+        }
+
+        h1 {
+            font-weight: 300;
+            letter-spacing: 5px;
+            font-size: 1.5rem;
+            margin-bottom: 50px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #8c92ac; /* 차분한 파스텔 톤 */
+            margin: 0 20px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2f4f4f;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="garden-gate">
+        <h1>잠시, 당신의 모든 숫자를 이곳에 내려놓으셔도 좋습니다.</h1>
+        
+        <div class="nav-links">
+            <a href="index.html">전황 보고실 (Signal Lamp)</a>
+            <a href="#">전자책 서재</a>
+            <a href="#">1헥타르의 꿈</a>
+        </div>
+    </div>
+
+</body>
+</html>
